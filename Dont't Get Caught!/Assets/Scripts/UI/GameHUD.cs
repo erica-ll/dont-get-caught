@@ -152,6 +152,15 @@ namespace DontGetCaught.UI
                 message += $"\nF - Fork station: {(lastInputSample.ForkReturned ? "AT STATION" : "PICKED UP")}{disconnected}";
                 message += $"\nC - Cup station: {(lastInputSample.CupReturned ? "AT STATION" : "PICKED UP")}{disconnected}";
             }
+            if (inputRouter != null)
+            {
+                message += $"\nInput: {inputRouter.CurrentSourceStatus}";
+                if (inputRouter.HasRawDelta)
+                {
+                    message += $" | Delta: {inputRouter.CurrentRawDelta:0.0}";
+                }
+                message += $" | Airflow: {lastInputSample.Airflow:0.00}";
+            }
             statusText.text = message;
         }
 

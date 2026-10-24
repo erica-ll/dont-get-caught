@@ -9,6 +9,11 @@
 [Mm]emoryCaptures/
 [Rr]ecordings/
 
+# Unity recovery and crash artifacts
+**/Assets/_Recovery/
+**/Assets/_Recovery.meta
+**/mono_crash.*.json
+
 # IDE and generated project files
 .vs/
 *.csproj

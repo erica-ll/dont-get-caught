@@ -19,6 +19,11 @@ namespace DontGetCaught.Input
             : GameInputSample.Disconnected;
 
         public string CurrentSourceName => source != null ? source.SourceName : "No input source";
+        public string CurrentSourceStatus => source is SerialInputSource serial
+            ? serial.Status
+            : CurrentSourceName;
+        public bool HasRawDelta => source is SerialInputSource;
+        public float CurrentRawDelta => source is SerialInputSource serial ? serial.RawDelta : 0f;
 
         public event Action<GameInputSample> SampleUpdated;
 

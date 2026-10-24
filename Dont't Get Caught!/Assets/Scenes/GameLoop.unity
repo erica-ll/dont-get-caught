@@ -743,6 +743,7 @@ GameObject:
   - component: {fileID: 830762401}
   - component: {fileID: 830762400}
   - component: {fileID: 830762399}
+  - component: {fileID: 830762402}
   m_Layer: 0
   m_Name: Input
   m_TagString: Untagged
@@ -762,7 +763,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 763be26f7bc50214aa193238212aba10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DontGetCaught.Input.InputRouter
-  sourceComponent: {fileID: 830762400}
+  sourceComponent: {fileID: 830762402}
 --- !u!114 &830762400
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -778,6 +779,27 @@ MonoBehaviour:
   inhaleKey: 1
   airflowStrength: 0.75
   airflowAdjustmentPerSecond: 0.5
+  forkToggleKey: 20
+  cupToggleKey: 17
+  forkReturned: 1
+  cupReturned: 1
+--- !u!114 &830762402
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 830762398}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6971d749dce54c198aa98988d3c2c68, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::DontGetCaught.Input.SerialInputSource
+  portName: /dev/cu.usbserial-10
+  baudRate: 115200
+  reconnectIntervalSeconds: 2
+  deltaThreshold: 20
+  deltaAtMaximumAirflow: 460
   forkToggleKey: 20
   cupToggleKey: 17
   forkReturned: 1
