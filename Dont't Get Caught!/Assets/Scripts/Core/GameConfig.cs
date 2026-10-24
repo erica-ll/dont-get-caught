@@ -16,8 +16,6 @@ namespace DontGetCaught.Core
         [Min(0)] public int pointsPerCompletedNoodle = 300;
 
         [Header("Noodle Input")]
-        [Range(0f, 1f)] public float airflowThreshold = 0.1f;
-        [Min(0.01f)] public float progressPerSecondAtMaximumAirflow = 0.25f;
         [Min(0f)] public float airflowSmoothingGraceSeconds = 0.08f;
 
         [Header("Teacher and Recovery")]

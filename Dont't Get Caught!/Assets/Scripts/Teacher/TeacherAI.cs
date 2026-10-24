@@ -61,11 +61,11 @@ namespace DontGetCaught.Teacher
                 while (gameManager.CurrentState == GameState.TeacherChecking)
                 {
                     GameInputSample sample = inputRouter.CurrentSample;
-                    if (sample.IsConnected && (sample.Airflow > gameManager.Config.airflowThreshold
-                        || !sample.ForkReturned || !sample.CupReturned))
+                    if (sample.IsConnected && (sample.Airflow > inputRouter.MinimumAirflow
+                        || !sample.ForkReturned))
                     {
-                        string reason = sample.Airflow > gameManager.Config.airflowThreshold
-                            ? "Still inhaling!" : "Return both props to their stations!";
+                        string reason = sample.Airflow > inputRouter.MinimumAirflow
+                            ? "Still inhaling!" : "Return the fork to its station!";
                         gameManager.ReportCaught(reason);
                         break;
                     }

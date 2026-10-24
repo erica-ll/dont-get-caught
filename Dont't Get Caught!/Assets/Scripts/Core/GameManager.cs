@@ -5,7 +5,7 @@ using UnityEngine;
 namespace DontGetCaught.Core
 {
     /// <summary>
-    /// Owns round state, timer, lives, teacher-check results, and pickup gating.
+    /// Owns round state, timer, lives, teacher-check results, and fork pickup gating.
     /// Other systems request transitions through this component instead of setting state directly.
     /// </summary>
     public sealed class GameManager : MonoBehaviour
@@ -100,7 +100,7 @@ namespace DontGetCaught.Core
             TimerChanged?.Invoke(RemainingSeconds);
             LivesChanged?.Invoke(RemainingLives);
             GameInputSample sample = inputRouter != null ? inputRouter.CurrentSample : GameInputSample.Disconnected;
-            ChangeState(sample.IsConnected && !sample.ForkReturned && !sample.CupReturned
+            ChangeState(sample.IsConnected && !sample.ForkReturned
                 ? GameState.Playing
                 : GameState.WaitingForPickup);
         }
@@ -139,7 +139,7 @@ namespace DontGetCaught.Core
                 return;
             }
 
-            if (sample.Airflow > config.airflowThreshold)
+            if (sample.Airflow > MinimumAirflow)
             {
                 ReportCaught("Still inhaling!");
                 return;
@@ -148,12 +148,6 @@ namespace DontGetCaught.Core
             if (!sample.ForkReturned)
             {
                 ReportCaught("Fork is not at its return point!");
-                return;
-            }
-
-            if (!sample.CupReturned)
-            {
-                ReportCaught("Noodle cup is not at its return point!");
                 return;
             }
 
@@ -184,7 +178,7 @@ namespace DontGetCaught.Core
             ChangeState(GameState.CaughtRecovery);
         }
 
-        /// <summary>Attempts to complete recovery; props must be returned and airflow stopped.</summary>
+        /// <summary>Attempts to complete recovery; the fork must be returned and airflow stopped.</summary>
         public void CompleteRecovery()
         {
             if (CurrentState == GameState.CaughtRecovery)
@@ -227,8 +221,8 @@ namespace DontGetCaught.Core
                 return;
             }
 
-            bool airflowStopped = sample.Airflow <= config.airflowThreshold;
-            if (airflowStopped && sample.ForkReturned && sample.CupReturned)
+            bool airflowStopped = sample.Airflow <= MinimumAirflow;
+            if (airflowStopped && sample.ForkReturned)
             {
                 caughtRecoveryElapsed = 0f;
                 recoveryTimerResumed = false;
@@ -243,7 +237,7 @@ namespace DontGetCaught.Core
                 return;
             }
 
-            if (!sample.ForkReturned && !sample.CupReturned)
+            if (!sample.ForkReturned)
             {
                 ChangeState(GameState.Playing);
             }
@@ -266,6 +260,8 @@ namespace DontGetCaught.Core
 
             return false;
         }
+
+        private float MinimumAirflow => inputRouter != null ? inputRouter.MinimumAirflow : 0.1f;
 
         private void ChangeState(GameState nextState)
         {

@@ -11,7 +11,7 @@ namespace DontGetCaught.Input
 {
     /// <summary>
     /// Reads airflow and fork Hall-sensor state from an Arduino-compatible serial device.
-    /// The cup return state remains keyboard-controlled for the mixed MVP prototype.
+    /// Fork return can be simulated with F until a hardware fork signal is received.
     /// </summary>
     public sealed class SerialInputSource : MonoBehaviour, IGameInputSource
     {
@@ -37,9 +37,7 @@ namespace DontGetCaught.Input
 
         [Header("Temporary Return-State Controls")]
         [SerializeField] private Key forkToggleKey = Key.F;
-        [SerializeField] private Key cupToggleKey = Key.C;
         [SerializeField] private bool forkReturned = true;
-        [SerializeField] private bool cupReturned = true;
 
         private SerialPort serialPort;
         private Thread readerThread;
@@ -77,7 +75,6 @@ namespace DontGetCaught.Input
             CurrentSample = new GameInputSample(
                 connected ? latestAirflow : 0f,
                 hasHardwareForkSignal ? latestForkReturned : forkReturned,
-                cupReturned,
                 connected);
         }
 
@@ -258,10 +255,6 @@ namespace DontGetCaught.Input
                 forkReturned = !forkReturned;
             }
 
-            if (keyboard[cupToggleKey].wasPressedThisFrame)
-            {
-                cupReturned = !cupReturned;
-            }
         }
 
         private static float NormalizeDelta(float delta, float threshold, float maximum)

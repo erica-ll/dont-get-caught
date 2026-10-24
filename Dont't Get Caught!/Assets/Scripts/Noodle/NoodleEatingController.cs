@@ -42,9 +42,9 @@ namespace DontGetCaught.Noodle
 
             GameInputSample sample = inputRouter.CurrentSample;
             float airflow = sample.Airflow;
-            float threshold = gameManager.Config.airflowThreshold;
+            float minimumAirflow = inputRouter.MinimumAirflow;
 
-            if (!sample.IsConnected || sample.ForkReturned || sample.CupReturned || airflow <= threshold)
+            if (!sample.IsConnected || sample.ForkReturned || airflow <= minimumAirflow)
             {
                 SetEating(false);
                 belowThresholdSeconds += Time.deltaTime;
@@ -58,11 +58,8 @@ namespace DontGetCaught.Noodle
             belowThresholdSeconds = 0f;
             SetEating(true);
 
-            float normalizedEffort = threshold >= 1f
-                ? 1f
-                : Mathf.InverseLerp(threshold, 1f, airflow);
-            float rate = gameManager.Config.progressPerSecondAtMaximumAirflow;
-            SetProgress(Progress + normalizedEffort * rate * Time.deltaTime);
+            float rate = inputRouter.ProgressSpeedForAirflow(airflow);
+            SetProgress(Progress + rate * Time.deltaTime);
 
             if (Progress >= 1f && !completionRaised)
             {

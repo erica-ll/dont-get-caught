@@ -6,7 +6,7 @@ namespace DontGetCaught.Input
 {
     /// <summary>
     /// Keyboard fallback input for gameplay before physical hardware is ready.
-    /// Hold Space to simulate airflow; F and C toggle prop return states.
+    /// Hold Space to simulate airflow; F toggles the fork return state.
     /// </summary>
     public sealed class KeyboardInputSource : MonoBehaviour, IGameInputSource
     {
@@ -15,11 +15,9 @@ namespace DontGetCaught.Input
         [SerializeField, Range(0f, 1f)] private float airflowStrength = 0.75f;
         [SerializeField, Range(0.05f, 1f)] private float airflowAdjustmentPerSecond = 0.5f;
 
-        [Header("Prop Return Simulation")]
+        [Header("Fork Return Simulation")]
         [SerializeField] private Key forkToggleKey = Key.F;
-        [SerializeField] private Key cupToggleKey = Key.C;
         [SerializeField] private bool forkReturned = true;
-        [SerializeField] private bool cupReturned = true;
 
         private Keyboard keyboard;
         private float currentAirflowStrength;
@@ -43,10 +41,15 @@ namespace DontGetCaught.Input
             }
 
             AdjustAirflowStrength();
-            TogglePropStates();
+            ToggleForkReturnState();
 
             float airflow = keyboard[inhaleKey].isPressed ? currentAirflowStrength : 0f;
-            CurrentSample = new GameInputSample(airflow, forkReturned, cupReturned, true);
+            CurrentSample = new GameInputSample(airflow, forkReturned, true);
+        }
+
+        private void OnDisable()
+        {
+            CurrentSample = GameInputSample.Disconnected;
         }
 
         private void AdjustAirflowStrength()
@@ -66,17 +69,13 @@ namespace DontGetCaught.Input
                 currentAirflowStrength + adjustment * airflowAdjustmentPerSecond * Time.deltaTime);
         }
 
-        private void TogglePropStates()
+        private void ToggleForkReturnState()
         {
             if (keyboard[forkToggleKey].wasPressedThisFrame)
             {
                 forkReturned = !forkReturned;
             }
 
-            if (keyboard[cupToggleKey].wasPressedThisFrame)
-            {
-                cupReturned = !cupReturned;
-            }
         }
     }
 }

@@ -7,7 +7,7 @@ using UnityEngine;
 namespace DontGetCaught.UI
 {
     /// <summary>
-    /// Displays round stats, current state, and each prop return-point sensor separately.
+    /// Displays round stats, current state, and the fork return-point sensor.
     /// </summary>
     public sealed class GameHUD : MonoBehaviour
     {
@@ -19,7 +19,6 @@ namespace DontGetCaught.UI
         [SerializeField] private TMP_Text scoreText;
         [SerializeField] private TMP_Text statusText;
         [SerializeField] private TMP_Text forkStationText;
-        [SerializeField] private TMP_Text cupStationText;
 
         private int lastDisplayedSecond = -1;
         private string lastCaughtReason;
@@ -126,8 +125,6 @@ namespace DontGetCaught.UI
             string disconnected = sample.IsConnected ? string.Empty : " (no input)";
             if (forkStationText != null)
                 forkStationText.text = $"F - Fork station: {(sample.ForkReturned ? "AT STATION" : "PICKED UP")}{disconnected}";
-            if (cupStationText != null)
-                cupStationText.text = $"C - Cup station: {(sample.CupReturned ? "AT STATION" : "PICKED UP")}{disconnected}";
             RenderStatus();
         }
 
@@ -137,20 +134,19 @@ namespace DontGetCaught.UI
             string message = displayedState switch
             {
                 GameState.Ready => "Ready",
-                GameState.Playing => "Playing - both props picked up",
-                GameState.TeacherWarning => "Warning - stop inhaling and return both props",
-                GameState.TeacherChecking => "Teacher checking - keep still and both props at their stations",
+                GameState.Playing => "Playing - fork picked up",
+                GameState.TeacherWarning => "Warning - stop inhaling and return the fork",
+                GameState.TeacherChecking => "Teacher checking - keep still and return the fork",
                 GameState.CaughtRecovery => BuildCaughtStatus(),
-                GameState.WaitingForPickup => "Teacher is away - pick up both props to resume",
+                GameState.WaitingForPickup => "Teacher is away - pick up the fork to resume",
                 GameState.Won => "Round complete",
                 GameState.Lost => "Game over",
                 _ => displayedState.ToString()
             };
-            if (forkStationText == null || cupStationText == null)
+            if (forkStationText == null)
             {
                 string disconnected = lastInputSample.IsConnected ? string.Empty : " (no input)";
                 message += $"\nF - Fork station: {(lastInputSample.ForkReturned ? "AT STATION" : "PICKED UP")}{disconnected}";
-                message += $"\nC - Cup station: {(lastInputSample.CupReturned ? "AT STATION" : "PICKED UP")}{disconnected}";
             }
             if (inputRouter != null)
             {
@@ -167,8 +163,8 @@ namespace DontGetCaught.UI
         private string BuildCaughtStatus()
         {
             return string.IsNullOrEmpty(lastCaughtReason)
-                ? "Caught - stop inhaling and return both props"
-                : $"Caught: {lastCaughtReason} Return both props, then pick them up to resume";
+                ? "Caught - stop inhaling and return the fork"
+                : $"Caught: {lastCaughtReason} Return the fork, then pick it up to resume";
         }
 
     }
