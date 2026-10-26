@@ -24,7 +24,6 @@ namespace DontGetCaught.UI
         [SerializeField] private GameObject tenSecondTimerPanel;
         [SerializeField] private TMP_Text roundStatusText;
         [SerializeField] private TMP_Text scoreText;
-        [SerializeField] private Image[] player1LifeIcons;
 
         [Header("Temporary logic states (Canvas-root, unskinned)")]
         [SerializeField] private TMP_Text forkStatusDebugText;
@@ -58,12 +57,10 @@ namespace DontGetCaught.UI
             if (gameManager != null)
             {
                 gameManager.TimerChanged += HandleTimerChanged;
-                gameManager.LivesChanged += HandleLivesChanged;
                 gameManager.StateChanged += HandleStateChanged;
                 gameManager.PlayerCaught += HandlePlayerCaught;
                 currentState = gameManager.CurrentState;
                 HandleTimerChanged(gameManager.RemainingSeconds);
-                HandleLivesChanged(gameManager.RemainingLives);
             }
 
             if (scoreManager != null)
@@ -93,7 +90,6 @@ namespace DontGetCaught.UI
             if (gameManager != null)
             {
                 gameManager.TimerChanged -= HandleTimerChanged;
-                gameManager.LivesChanged -= HandleLivesChanged;
                 gameManager.StateChanged -= HandleStateChanged;
                 gameManager.PlayerCaught -= HandlePlayerCaught;
             }
@@ -110,7 +106,7 @@ namespace DontGetCaught.UI
             if (totalSeconds == lastDisplayedSecond) return;
             lastDisplayedSecond = totalSeconds;
 
-            string display = System.TimeSpan.FromSeconds(totalSeconds).ToString(@"mm\:ss");
+            string display = $"{totalSeconds / 60}:{totalSeconds % 60:00}";
             if (timerText != null) timerText.text = display;
             if (thirtySecondTimerText != null) thirtySecondTimerText.text = display;
             if (tenSecondTimerText != null) tenSecondTimerText.text = display;
@@ -125,18 +121,6 @@ namespace DontGetCaught.UI
             if (regularTimerPanel != null) regularTimerPanel.SetActive(showRegular);
             if (thirtySecondTimerPanel != null) thirtySecondTimerPanel.SetActive(showThirtySecond);
             if (tenSecondTimerPanel != null) tenSecondTimerPanel.SetActive(showTenSecond);
-        }
-
-        private void HandleLivesChanged(int lives)
-        {
-            if (player1LifeIcons == null) return;
-            for (int i = 0; i < player1LifeIcons.Length; i++)
-            {
-                if (player1LifeIcons[i] != null)
-                {
-                    player1LifeIcons[i].gameObject.SetActive(i < lives);
-                }
-            }
         }
 
         private void HandleScoreChanged(int score)
@@ -255,11 +239,11 @@ namespace DontGetCaught.UI
         private void WarnIfRequiredReferencesAreMissing()
         {
             if (timerText == null || roundStatusText == null || scoreText == null
-                || noodleProgressFill == null || player1LifeIcons == null || player1LifeIcons.Length == 0)
+                || noodleProgressFill == null)
             {
                 Debug.LogWarning(
-                    "ArtDirectedGameHUD needs Timer, Round Status, Score, Noodle Progress, and Player 1 life icon " +
-                    "references assigned in the Inspector. Canvas-root fork/input debug text fields are optional.", this);
+                    "ArtDirectedGameHUD needs Timer, Round Status, Score, and Noodle Progress references " +
+                    "assigned in the Inspector. Canvas-root fork/input debug text fields are optional.", this);
             }
         }
     }
